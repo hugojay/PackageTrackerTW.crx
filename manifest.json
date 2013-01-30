@@ -1,0 +1,16 @@
+{
+	"name": "你在哪裡？",
+	"version": "0.1",
+	"description": "一個很糗的故事",
+	"icons": { "128": "icon.png" },
+	"permissions": [
+		"http://postserv.post.gov.tw/"
+	],
+	"browser_action": {
+		"default_title": "",
+		"default_icon": "chromium.png",
+		"default_popup": "popup.html"
+	},
+
+	"manifest_version": 2
+}
