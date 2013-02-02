@@ -1,0 +1,16 @@
+.Context_inout{
+	display: none;
+}
+.Context_tb tr:nth-child(2n) {
+    background: rgba(220,220,220,0.3);
+}
+.Context_tb td,.Context_tb th{
+    padding: 4px 0;
+}
+.Context_tb th{
+    color: green;
+}
+a{
+    color: #666;
+    text-decoration: none;
+}

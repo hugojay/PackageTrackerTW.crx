@@ -1,13 +1,13 @@
 {
 	"name": "你在哪裡？",
 	"version": "0.1",
-	"description": "一個很糗的故事",
+	"description": "一個很糗的故事，催生了這支程式",
 	"icons": { "128": "icon.png" },
 	"permissions": [
 		"http://postserv.post.gov.tw/"
 	],
 	"browser_action": {
-		"default_title": "",
+		"default_title": "掛號快查",
 		"default_icon": "icon.png",
 		"default_popup": "popup.html"
 	},
