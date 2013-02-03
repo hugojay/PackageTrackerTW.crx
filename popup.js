@@ -30,7 +30,7 @@ $(document).ready(function(){
 				$("#content").html("CONNECT ERROR\n" + xhr);
 			}
 		});
-		$("body>form>span a").bind("click", function(){
+		$("body>form>a").bind("click", function(){
 			chrome.tabs.create({url: $(this).attr("href")});
 		});
 	});
