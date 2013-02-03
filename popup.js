@@ -1,4 +1,7 @@
 $(document).ready(function(){
+	if(typeof window.localStorage['number'] != "undefined"){
+		$(":text").val(window.localStorage['number']);
+	}
 	$("form").submit(function(e){
 		e.preventDefault();
 		var url = "http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_3&_SYS_ID=D&_MENU_ID=189&_ACTIVE_ID=190&MAILNO=" + $(":text").val();
@@ -22,6 +25,7 @@ $(document).ready(function(){
 					    end = result.indexOf("<!-- ##################主要內容################# END -->");
 					result = process(result.substring(start, end));
 					$("#content").html(result);
+					window.localStorage['number'] = $(":text").val();
 				}else{
 					$("#content").html("LOAD FAILED");
 				}
