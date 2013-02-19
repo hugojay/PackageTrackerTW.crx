@@ -4,7 +4,17 @@ $(document).ready(function(){
 	}
 	$("form").submit(function(e){
 		e.preventDefault();
-		var url = "http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_3&_SYS_ID=D&_MENU_ID=189&_ACTIVE_ID=190&MAILNO=" + $(":text").val();
+		var number = $(":text").val(), url, type;
+		if(number.length == 10 || number.length == 12){
+			url = "http://www.t-cat.com.tw/Inquire/TraceDetail.aspx?BillID=" + number;
+			type = "tcat";
+		}else if(number.length == 14 || number.length == 20){
+			url = "http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_3&_SYS_ID=D&_MENU_ID=189&_ACTIVE_ID=190&MAILNO=" + number;
+			type = "post";
+		}else{
+			alert("郵局郵件號碼為14或20碼、黑貓宅急便託運單號碼為10或12碼。");
+			return false;
+		}
 		if($("form>a").size()){
 			$("form>a").attr("href", url);
 		}else{
@@ -15,23 +25,34 @@ $(document).ready(function(){
 			dataType: "html",
 			cache: false,
 			beforeSend: function(){
-				$("body").removeClass("result");
-				$("#content").html("LOADING");
+				$("body").removeClass("result result-post");
+				$("#content").text("LOADING");
 			},
 			success: function(result){
 				if(result){
 					$("body").addClass("result");
-					var start = result.indexOf("<!-- ##################主要內容################# BEGIN -->"),
-					    end = result.indexOf("<!-- ##################主要內容################# END -->");
-					result = process(result.substring(start, end));
+					switch(type){
+						case "post":
+							var start = result.indexOf("<!-- ##################主要內容################# BEGIN -->"),
+							    end = result.indexOf("<!-- ##################主要內容################# END -->");
+							result = process(result.substring(start, end));
+							$("body").addClass("result-post");
+							break;
+						case "tcat":
+							var start = result.indexOf("<table cellspacing=\"1\" cellpadding=\"2\" width=\"560\" border=\"0\">"),
+							    end = start + result.substr(start).indexOf("</table>") + 8;
+							result = linkremove(result.substring(start, end));
+							break;
+					}
 					$("#content").html(result);
-					window.localStorage['number'] = $(":text").val();
+					window.localStorage['number'] = number;
 				}else{
-					$("#content").html("LOAD FAILED");
+					$("#content").text("LOAD FAILED");
 				}
 			},
 			error: function(xhr){
-				$("#content").html("CONNECT ERROR\n" + xhr);
+				$("#content").text("CONNECT ERROR");
+				console.log(xhr);
 			}
 		});
 		$("body>form>a").bind("click", function(){
@@ -73,4 +94,7 @@ function str_trim(text){
 // dispFormatDateTimeEng('20130201070616')
 function dispFormatDateTimeEng(text){
 	return text.substr(0,4) + "/" + text.substr(4,2) + "/" + text.substr(6,2)+' '+ text.substr(8,2)+':'+ text.substr(10,2);
+}
+function linkremove(text){
+	return text.replace(/href=/gi, "nohref=");
 }
