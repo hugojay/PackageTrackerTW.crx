@@ -12,13 +12,14 @@ $(document).ready(function(){
 			url = "http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_3&_SYS_ID=D&_MENU_ID=189&_ACTIVE_ID=190&MAILNO=" + number;
 			type = "post";
 		}else{
-			alert("郵局郵件號碼為14或20碼、黑貓宅急便託運單號碼為10或12碼。");
+			$("#content").text("郵局郵件號碼為14或20碼、黑貓宅急便託運單號碼為10或12碼。");
+			$(":text").focus();
 			return false;
 		}
 		if($("form>a").size()){
 			$("form>a").attr("href", url);
 		}else{
-			$("#content").before("<a href='" + url + "'>開啟原網頁</a>");
+			$("#content").before("<a href='" + url + "'>開啟原網頁</a>").css("min-width", "290px");
 		}
 		$.ajax({
 			url: url,
