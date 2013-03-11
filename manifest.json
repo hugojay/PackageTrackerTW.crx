@@ -1,7 +1,7 @@
 {
-	"name": "掛號快查",
-	"version": "1.0.2",
-	"description": "快速查詢中華郵政國內快捷/掛號/包裹。資料來源：中華郵政公司網路郵局",
+	"name": "包裹/掛號快查",
+	"version": "1.1",
+	"description": "快速查詢中華郵政國內快捷/掛號/包裹、黑貓宅急便及台灣宅配通等物流運送狀態追蹤。",
 	"icons": {
 		"48": "icons/ipost.logo.48.png",
 		"128": "icons/ipost.logo.128.png"
@@ -11,7 +11,7 @@
 		"http://www.t-cat.com.tw/"
 	],
 	"browser_action": {
-		"default_title": "掛號快查",
+		"default_title": "包裹/掛號快查",
 		"default_icon": {
 			"19": "icons/ipost.logo.19.png",
 			"38": "icons/ipost.logo.38.png"

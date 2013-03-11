@@ -16,8 +16,8 @@ $(document).ready(function(){
 			$(":text").focus();
 			return false;
 		}
-		if($("form>a").size()){
-			$("form>a").attr("href", url);
+		if($("body>a").size()){
+			$("body>a").attr("href", url);
 		}else{
 			$("#content").before("<a href='" + url + "'>開啟原網頁</a>").css("min-width", "290px");
 		}
