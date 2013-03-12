@@ -1,7 +1,35 @@
 $(document).ready(function(){
+	var supportList, lengthList;
+	$.ajax({
+		url : "supportList.json",
+		dataType : "json",
+		success: function(data){
+			supportList = data;
+			lengthList = $.each(data, function(i, val){
+				$.each(val.length, function(index, value){
+					if($.inArray(value, lengthList) < 0){
+						lengthList.push(value);
+					}
+				});
+			});
+		},
+		error : function(){
+			alert("Cannot load file supportList.json, try to reinstall.");
+		}
+	});
 	if(typeof window.localStorage['number'] != "undefined"){
 		$(":text").val(window.localStorage['number']);
 	}
+	$(":text").keyup(function(e){
+		var number = $(":text").val(), url, type;
+		if(number.length == 12){
+			$("form>span").html(function(){
+				var options;
+				options += "<option></option>";//not finished
+				return "<select>" + options + "</select>";
+			});
+		}
+	});
 	$("form").submit(function(e){
 		e.preventDefault();
 		var number = $(":text").val(), url, type;
@@ -12,7 +40,7 @@ $(document).ready(function(){
 			url = "http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_3&_SYS_ID=D&_MENU_ID=189&_ACTIVE_ID=190&MAILNO=" + number;
 			type = "post";
 		}else{
-			$("#content").text("郵局郵件號碼為14或20碼、黑貓宅急便託運單號碼為10或12碼。");
+			$("#content").text("郵局郵件號碼為14或20碼、宅急便託運單號碼為10或12碼、宅配通為12碼。");
 			$(":text").focus();
 			return false;
 		}
