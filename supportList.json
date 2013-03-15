@@ -1,5 +1,5 @@
 [
-	{"type" : "post", "title" : "郵局", "length" : "14|20", "url" : "http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_3&_SYS_ID=D&_MENU_ID=189&_ACTIVE_ID=190&MAILNO="},
-	{"type" : "tcat", "title" : "黑貓宅急便", "length" : "10|12", "url" : "http://www.t-cat.com.tw/Inquire/TraceDetail.aspx?BillID="},
-	{"type" : "ecan", "title" : "台灣宅配通", "length" : 12, "url" : "http://query2.e-can.com.tw/self_link/id_link_c.asp?txtMainid=", "exsample" : "277113023235"}
+	{"type" : "post", "title" : "郵局", "length" : [14, 20], "url" : "http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_3&_SYS_ID=D&_MENU_ID=189&_ACTIVE_ID=190&MAILNO="},
+	{"type" : "tcat", "title" : "黑貓宅急便", "length" : [10, 12], "url" : "http://www.t-cat.com.tw/Inquire/TraceDetail.aspx?BillID="},
+	{"type" : "ecan", "title" : "台灣宅配通", "length" : [12], "url" : "http://query2.e-can.com.tw/self_link/id_link_c.asp?txtMainid=", "example" : "277113023235"}
 ]

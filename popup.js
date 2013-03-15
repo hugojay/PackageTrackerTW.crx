@@ -1,44 +1,77 @@
-$(document).ready(function(){
-	var supportList, lengthList;
+$(document).ready(function(event){
+	var supportList = [], lengthList = [];
 	$.ajax({
 		url : "supportList.json",
 		dataType : "json",
 		success: function(data){
-			supportList = data;
-			lengthList = $.each(data, function(i, val){
-				$.each(val.length, function(index, value){
+			$.each(data, function(i, v){
+				$.each(v.length, function(index, value){
+					supportList.push({
+						length : value,
+						id : v.type,
+						title : v.title,
+						url : v.url
+					});
 					if($.inArray(value, lengthList) < 0){
 						lengthList.push(value);
 					}
 				});
 			});
+			console.log(supportList)
 		},
 		error : function(){
-			alert("Cannot load file supportList.json, try to reinstall.");
+			$("body").text("Cannot load file supportList.json, try to reinstall.");
 		}
 	});
 	if(typeof window.localStorage['number'] != "undefined"){
 		$(":text").val(window.localStorage['number']);
 	}
 	$(":text").keyup(function(e){
-		var number = $(":text").val(), url, type;
-		if(number.length == 12){
-			$("form>span").html(function(){
-				var options;
-				options += "<option></option>";//not finished
-				return "<select>" + options + "</select>";
-			});
+		// 檢查
+		var number = $(":text").val(), yourList = [];
+		$("form>span").empty();
+		if(number.length > 0){
+			if($.inArray(number.length, lengthList) >= 0){
+				$(supportList).each(function(i, v){
+					if(number.length == v.length){
+						yourList.push({
+							url : v.url + number,
+							title : v.title
+						});
+					}
+				});
+				if(yourList.length == 1){
+					// 唯一可能
+					$("form>span").html("<input type='hidden' id='type' value='" + yourList[0].url + "' />" + yourList[0].title);
+				}else{
+					// 多種可能，造下拉選單
+					$("form>span").html(function(){
+						var options = "";
+						$(yourList).each(function(i, v){
+							options += "<option value='" + v.url + "'>" + v.title + "</option>";
+						});
+						return "<select id='type'>" + options + "</select>";
+					});
+				}
+			}
 		}
 	});
 	$("form").submit(function(e){
 		e.preventDefault();
-		var number = $(":text").val(), url, type;
-		if(number.length == 10 || number.length == 12){
-			url = "http://www.t-cat.com.tw/Inquire/TraceDetail.aspx?BillID=" + number;
-			type = "tcat";
-		}else if(number.length == 14 || number.length == 20){
-			url = "http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_3&_SYS_ID=D&_MENU_ID=189&_ACTIVE_ID=190&MAILNO=" + number;
-			type = "post";
+        $(":text").triggerHandler("keyup");
+		/*// these code should work in the future (currently not work on Chrome 25.0.1364.172 m)
+		//ref: https://code.google.com/p/chromium/issues/detail?id=158004
+		chrome.permissions.request({origins: ["http://google.com"]}, function(granted) {
+			// The callback argument will be true if the user granted the permissions.
+			if (granted) {
+				console.log("yes");
+			} else {
+				console.log("no");
+			}
+		});
+		*/
+		if($("#type").size() > 0){
+			url = $("#type").val();
 		}else{
 			$("#content").text("郵局郵件號碼為14或20碼、宅急便託運單號碼為10或12碼、宅配通為12碼。");
 			$(":text").focus();
