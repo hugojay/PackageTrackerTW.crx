@@ -1,101 +1,148 @@
 $(document).ready(function(){
-	if(typeof window.localStorage['number'] != "undefined"){
-		$(":text").val(window.localStorage['number']);
-	}
+	var supportList = [], lengthList = [];
+	$.ajax({
+		url : "supportList.json",
+		dataType : "json",
+		success: function(data){
+			$.each(data, function(i, v){
+				$.each(v.length, function(ii, value){
+					supportList.push({
+						length : value,
+						type : v.type,
+						title : v.title,
+						url : v.url,
+						js : v.js
+					});
+					if($.inArray(value, lengthList) < 0){
+						lengthList.push(value);
+					}
+				});
+			});
+			// load last session if exists
+			if(typeof window.localStorage['number'] != "undefined"){
+				$(":text").val(window.localStorage['number']).triggerHandler("keyup");
+				$("#type").val(window.localStorage['type']);
+			}
+		},
+		error : function(){
+			$("body").text("Cannot load file supportList.json, try to reinstall.");
+		}
+	});
+	$(":text").keyup(function(e){
+		// check and determine
+		var number = $(":text").val(), yourList = [], yourListStr = "";
+		if(number.length == 0 || $.inArray(number.length, lengthList) < 0){
+			$("form>span").empty().data("yourListStr", "");
+		}else{
+			$(supportList).each(function(i, v){
+				if(number.length == v.length){
+					yourList.push({
+						index : i,
+						title : v.title
+					});
+					yourListStr += v.type;
+				}
+			});
+			// change option(s) only if if there is any changes
+			if($("form>span").data("yourListStr") != yourListStr){
+				if(yourList.length == 1){
+					// 唯一可能
+					$("form>span").html("<input type='hidden' id='type' value='" + yourList[0].index + "' />" + yourList[0].title);
+				}else{
+					// 多種可能，造下拉選單
+					$("form>span").html(function(){
+						var options = "";
+						$(yourList).each(function(i, v){
+							options += "<option value='" + v.index + "'>" + v.title + "</option>";
+						});
+						return "<select id='type'>" + options + "</select>";
+					});
+				}
+				$("form>span").data("yourListStr", yourListStr);
+			}
+		}
+	});
 	$("form").submit(function(e){
 		e.preventDefault();
-		var number = $(":text").val(), url, type;
-		if(number.length == 10 || number.length == 12){
-			url = "http://www.t-cat.com.tw/Inquire/TraceDetail.aspx?BillID=" + number;
-			type = "tcat";
-		}else if(number.length == 14 || number.length == 20){
-			url = "http://postserv.post.gov.tw/webpost/CSController?cmd=POS4001_3&_SYS_ID=D&_MENU_ID=189&_ACTIVE_ID=190&MAILNO=" + number;
-			type = "post";
-		}else{
-			$("#content").text("郵局郵件號碼為14或20碼、黑貓宅急便託運單號碼為10或12碼。");
-			$(":text").focus();
-			return false;
-		}
-		if($("body>a").size()){
-			$("body>a").attr("href", url);
-		}else{
-			$("#content").before("<a href='" + url + "'>開啟原網頁</a>").css("min-width", "290px");
-		}
-		$.ajax({
-			url: url,
-			dataType: "html",
-			cache: false,
-			beforeSend: function(){
-				$("body").removeClass("result result-post");
-				$("#content").text("LOADING");
-			},
-			success: function(result){
-				if(result){
-					$("body").addClass("result");
-					switch(type){
-						case "post":
-							var start = result.indexOf("<!-- ##################主要內容################# BEGIN -->"),
-							    end = result.indexOf("<!-- ##################主要內容################# END -->");
-							result = process(result.substring(start, end));
-							$("body").addClass("result-post");
-							break;
-						case "tcat":
-							var start = result.indexOf("<table cellspacing=\"1\" cellpadding=\"2\" width=\"560\" border=\"0\">"),
-							    end = start + result.substr(start).indexOf("</table>") + 8;
-							result = linkremove(result.substring(start, end));
-							break;
+		$(":text").triggerHandler("keyup");
+		if($("#type").size() > 0){
+			var number = $(":text").val(),
+				index = $("#type").val() * 1,
+				url = supportList[index].url + number,
+				loadJS = supportList[index].js, loadedJS = 0,
+				loadQuery = function(){
+					if(++loadedJS == loadJS.length){
+						/*// these code should work in the future (currently not work on Chrome 25.0.1364.172 m)
+						//ref: https://code.google.com/p/chromium/issues/detail?id=158004
+						chrome.permissions.request({origins: ["http://google.com"]}, function(granted) {
+							// The callback argument will be true if the user granted the permissions.
+							if (granted) {
+								console.log("yes");
+							} else {
+								console.log("no");
+							}
+						});
+						*/
+						$.ajax({
+							url: url,
+							dataType: "html",
+							cache: false,
+							beforeSend: function(){
+								$("body").removeClass("result result-post");
+								$("#content").text("LOADING");
+							},
+							success: function(result){
+								if(result){
+									$("body").addClass("result");
+									$("#content").html(process(result));
+									// function "process" comes from *.js
+									window.localStorage['number'] = number;
+									window.localStorage['type'] = index;
+								}else{
+									$("#content").text("LOAD FAILED");
+								}
+							},
+							error: function(xhr){
+								$("#content").text("CONNECT ERROR");
+								console.log(xhr);
+							}
+						});
 					}
-					$("#content").html(result);
-					window.localStorage['number'] = number;
-				}else{
-					$("#content").text("LOAD FAILED");
-				}
-			},
-			error: function(xhr){
-				$("#content").text("CONNECT ERROR");
-				console.log(xhr);
+				};
+			if($("body>a").size()){
+				$("body>a").attr("href", url);
+			}else{
+				$("#content").before("<a href='" + url + "'>開啟原網頁</a>").css("min-width", "290px");
 			}
-		});
-		$("body>form>a").bind("click", function(){
-			chrome.tabs.create({url: $(this).attr("href")});
-		});
+			// Load *.js which need
+			$.each(loadJS, function(i, v){
+				loadScript("supportFiles/" + v, loadQuery);
+			});
+		}else{
+			// Incorrect input
+			$("#content").text("郵局郵件號碼為14或20碼、宅急便託運單號碼為10或12碼、宅配通為12碼。");
+			$("body>a").remove();
+			$(":text").focus();
+		}
 	});
+
+	$("body>form>a").bind("click", function(){
+		chrome.tabs.create({url: $(this).attr("href")});
+	});
+	function loadScript(url, callback){
+		var script = document.createElement("script")
+		script.type = "text/javascript";
+
+		script.onload = function(){
+			callback();
+		};
+
+		script.src = url;
+		document.getElementsByTagName("head")[0].appendChild(script);
+	}
 });
 
-// 過濾惱人的 <script>
+// default process function. Would be replaced by supportFiles/*.js
 function process(result){
-	//var patt = /<script>str_trim\('.*?'\);?<\/script>/g;
-	var patt1 = "<script>.+?\\('",
-		patt2 = "'\\);?<\\/script>", // ');</script>
-		patt = new RegExp(patt1 + ".*?" + patt2, "g"),
-		matches = result.match(patt),
-		splities = result.split(patt), func;
-	if(matches != null){
-		for(var i in matches){
-			func = matches[i].substr(8, 4);
-			matches[i] = matches[i].replace(new RegExp(patt1), "").replace(new RegExp(patt2), "");
-			switch(func){
-				case "str_":
-					matches[i] = str_trim(matches[i]);
-					break;
-				case "disp":
-					matches[i] = dispFormatDateTimeEng(matches[i]);
-					break;
-			}
-			splities[i] = splities[i] + matches[i];
-		}
-		return splities.join("");
-	}else
-		return result;
-}
-// 偉大的去空白
-function str_trim(text){
-	return text.replace(/　| /g, "");
-}
-// dispFormatDateTimeEng('20130201070616')
-function dispFormatDateTimeEng(text){
-	return text.substr(0,4) + "/" + text.substr(4,2) + "/" + text.substr(6,2)+' '+ text.substr(8,2)+':'+ text.substr(10,2);
-}
-function linkremove(text){
-	return text.replace(/href=/gi, "nohref=");
+	return result;
 }
