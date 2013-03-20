@@ -1,4 +1,4 @@
-$(document).ready(function(event){
+$(document).ready(function(){
 	var supportList = [], lengthList = [];
 	$.ajax({
 		url : "supportList.json",
@@ -18,17 +18,18 @@ $(document).ready(function(event){
 					}
 				});
 			});
-			console.log(supportList)
+			// load last session if exists
+			if(typeof window.localStorage['number'] != "undefined"){
+				$(":text").val(window.localStorage['number']).triggerHandler("keyup");
+				$("#type").val(window.localStorage['type']);
+			}
 		},
 		error : function(){
 			$("body").text("Cannot load file supportList.json, try to reinstall.");
 		}
 	});
-	if(typeof window.localStorage['number'] != "undefined"){
-		$(":text").val(window.localStorage['number']);
-	}
 	$(":text").keyup(function(e){
-		// 檢查並判定
+		// check and determine
 		var number = $(":text").val(), yourList = [], yourListStr = "";
 		if(number.length == 0 || $.inArray(number.length, lengthList) < 0){
 			$("form>span").empty().data("yourListStr", "");
@@ -42,9 +43,8 @@ $(document).ready(function(event){
 					yourListStr += v.type;
 				}
 			});
-			if($("form>span").data("yourListStr") == yourListStr){
-				// Nothing change
-			}else{
+			// change option(s) only if if there is any changes
+			if($("form>span").data("yourListStr") != yourListStr){
 				if(yourList.length == 1){
 					// 唯一可能
 					$("form>span").html("<input type='hidden' id='type' value='" + yourList[0].index + "' />" + yourList[0].title);
@@ -97,6 +97,7 @@ $(document).ready(function(event){
 									$("#content").html(process(result));
 									// function "process" comes from *.js
 									window.localStorage['number'] = number;
+									window.localStorage['type'] = index;
 								}else{
 									$("#content").text("LOAD FAILED");
 								}
@@ -124,23 +125,24 @@ $(document).ready(function(event){
 			$(":text").focus();
 		}
 	});
+
+	$("body>form>a").bind("click", function(){
+		chrome.tabs.create({url: $(this).attr("href")});
+	});
+	function loadScript(url, callback){
+		var script = document.createElement("script")
+		script.type = "text/javascript";
+
+		script.onload = function(){
+			callback();
+		};
+
+		script.src = url;
+		document.getElementsByTagName("head")[0].appendChild(script);
+	}
 });
 
-$("body>form>a").bind("click", function(){
-	chrome.tabs.create({url: $(this).attr("href")});
-});
-function loadScript(url, callback){
-	var script = document.createElement("script")
-	script.type = "text/javascript";
-
-	script.onload = function(){
-		callback();
-	};
-
-	script.src = url;
-	document.getElementsByTagName("head")[0].appendChild(script);
-}
+// default process function. Would be replaced by supportFiles/*.js
 function process(result){
-	// default process function. Would be replaced by supportFiles/*.js
 	return result;
 }

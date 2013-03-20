@@ -1,10 +1,10 @@
 {
-	"name": "包裹/掛號快查",
-	"version": "1.1",
-	"description": "快速查詢中華郵政國內快捷/掛號/包裹、黑貓宅急便及台灣宅配通等物流運送狀態追蹤。",
+	"name": "台灣宅配/掛號快查",
+	"version": "1.2",
+	"description": "快速查詢黑貓宅急便、台灣宅配通及郵局國內快捷/掛號/包裹等運送追蹤，以JS實作。",
 	"icons": {
-		"48": "icons/ipost.logo.48.png",
-		"128": "icons/ipost.logo.128.png"
+		"48": "icons/logo.48.png",
+		"128": "icons/logo.128.png"
 	},
 	"permissions": [
 		"*://*/*"
@@ -12,8 +12,8 @@
 	"browser_action": {
 		"default_title": "包裹/掛號快查",
 		"default_icon": {
-			"19": "icons/ipost.logo.19.png",
-			"38": "icons/ipost.logo.38.png"
+			"19": "icons/logo.19.png",
+			"38": "icons/logo.38.png"
 		},
 		"default_popup": "popup.html"
 	},
