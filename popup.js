@@ -93,11 +93,10 @@ $(document).ready(function(){
 							},
 							success: function(result){
 								if(result){
-									$("body").addClass("result");
-									$("#content").html(process(result));
-									// function "process" comes from *.js
 									window.localStorage['number'] = number;
 									window.localStorage['type'] = index;
+									$("body").addClass("result");
+									$("#content").html(process(result));
 								}else{
 									$("#content").text("LOAD FAILED");
 								}
@@ -114,7 +113,7 @@ $(document).ready(function(){
 			}else{
 				$("#content").before("<a href='" + url + "'>開啟原網頁</a>").css("min-width", "290px");
 			}
-			// Load *.js which need
+			// Load *.js which contain "process" function first
 			$.each(loadJS, function(i, v){
 				loadScript("supportFiles/" + v, loadQuery);
 			});
