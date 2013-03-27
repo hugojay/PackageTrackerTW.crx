@@ -108,10 +108,10 @@ $(document).ready(function(){
 						});
 					}
 				};
-			if($("body>a").size()){
-				$("body>a").attr("href", url);
+			if($("body>form>a").size()){
+				$("body>form>a").attr("href", url);
 			}else{
-				$("#content").before("<a href='" + url + "'>開啟原網頁</a>").css("min-width", "290px");
+				$("body>form").append("<a href='" + url + "'>開啟原網頁</a>").css("min-width", "290px");
 			}
 			// Load *.js which contain "process" function first
 			$.each(loadJS, function(i, v){
@@ -125,7 +125,7 @@ $(document).ready(function(){
 		}
 	});
 
-	$("body>form>a").bind("click", function(){
+	$("body>form").on("click", "a", function(){
 		chrome.tabs.create({url: $(this).attr("href")});
 	});
 	function loadScript(url, callback){
