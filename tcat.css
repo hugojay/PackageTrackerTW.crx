@@ -1,0 +1,4 @@
+.tablelist { width:100%; font-size:12px; border:1px solid #d0d0d0;border-width:1px 0 0 1px; }
+.tablelist td{ padding:3px;border:1px solid #d0d0d0; border-width:0 1px 1px 0;}
+.tablelist .top{background-color:#e9e6e0; font-weight:bold; text-align:center;}
+.tablelist p{padding:0;}

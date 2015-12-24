@@ -15,3 +15,7 @@ https://chrome.google.com/webstore/detail/iaenbafdhkjdnkfipdfedbfhhkakhkhi?hl=zh
 
 former: [掛號/包裹快查 (chrome web store)](
 https://chrome.google.com/webstore/detail/kllpjlonnkpakmopgbmnhoihpmghghdb?hl=zh-TW&gl=TW)（最後一版，除非網路郵局改版）
+
+更新 changelog:
+2015/12/24(v1.2.3) 修正(更新)宅急便無法快查的問題
+2013/03/28(v1.2.2) 增7-11交貨便查詢支援、修正「開啟原網頁」點擊失效
